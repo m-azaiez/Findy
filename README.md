@@ -1,85 +1,84 @@
 # Findy
 
-Findy is a mobile-first place discovery platform focused on search, favorites, reviews, and lightweight admin operations.
+Findy is a mobile-first place discovery platform focused on search, favorites, reviews, and lightweight admin operations. It is inspired by standard discovery applications but scoped down strictly to core value and speed for its MVP.
 
-This repository now contains the first implementation slice:
+This repository contains the full Next.js application, database schemas, and documentation.
 
-- `apps/web`: Next.js application for the MVP
-- `supabase`: SQL migration and seed data for the backend
-- `docs`: project notes and delivery framing
+## 🚀 Features & Current Status
 
-## Stack
+The development is guided by our Technical Specifications and MVP Roadmap. Here is the current progress of the project core system:
 
-- Next.js App Router
-- TypeScript
-- Tailwind CSS
-- Supabase
-- Zod
-- React Query
+### ✅ Completed (Foundation & Core Features)
+- **Full-Stack Foundation**: Next.js App Router (React), Tailwind CSS, shadcn/ui components, and React Query data fetching.
+- **Supabase Backend**: Complete initial schema setup including tables for Profiles, Categories, Places, place metrics, Reviews, and Favorites. Includes advanced PostgreSQL triggers (e.g., auto-aggregated rating average updates) and comprehensive Row Level Security (RLS) policies.
+- **Authentication**: SSR-compatible Supabase Sessions with Sign-up, Login, Logout, Forgot Password, and Reset Password workflows fully built.
+- **Browse & Search (Read layer)**: 
+  - Dynamic discovery and live SQL querying against places.
+  - Detailed place cards rendering live address, stats, tags, descriptions, and current opening hours. 
+- **Favorites System**: End-to-end functionality allowing authenticated users to bookmark places, toggle states from the search UI or place details, and fetch them in their personal dashboard.
+- **Security & Hygiene**: Latest forward migrations mapping `set search_path` bounds and profile escalation bounds are actively applied out of the box.
 
-## Workspace Commands
+### 🚧 In Progress / Pending MVP Features
+- **Review Writes**: While the place detail page can successfully read list views of generated reviews, the authenticated flow to create, edit, and delete personal reviews is currently pending.
+- **Real Dashboard Connectivity**: Personal dashboard layout is built, but currently shows mocked statistics instead of querying a user's actual saved metrics.
+- **Admin CRUD Operations**: Adding new places and categories currently relies on direct database seeds or SQL insertion. Lightweight Admin UI screens are planned to replace this.
+- **Image Content Storage**: Image uploading integration with Supabase Storage for Place details.
 
-From the repository root:
+## 🛠 Tech Stack
+
+- **Frontend**: Next.js App Router, React, TypeScript, Tailwind CSS, shadcn/ui
+- **State & Data Fetching**: React Query, Zod (Validations)
+- **Backend & Database**: Supabase (Auth, PostgreSQL DB, Edge Functions mapped via RPC)
+- **Deployment Strategy**: Vercel (Frontend) + Supabase Cloud (Backend)
+
+## 💻 Workspace Commands
+
+From the repository root, install dependencies:
 
 ```bash
 npm install
+```
+
+Launch the development server:
+
+```bash
 npm run dev
 ```
 
-Additional commands:
-
+Additional verification commands available:
 ```bash
 npm run build
 npm run lint
 npm run typecheck
 ```
 
-## Environment
+## ⚙️ Environment Variables
 
-Create `apps/web/.env.local` from `apps/web/.env.example`.
+Create the `apps/web/.env.local` file by copying the provided example:
 
-Required values:
+```bash
+cp apps/web/.env.example apps/web/.env.local
+```
 
+Required values for `apps/web/.env.local`:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `NEXT_PUBLIC_SITE_URL`
+- `NEXT_PUBLIC_SITE_URL` (Used for auth redirects in local and deployed environments)
 
-Use `NEXT_PUBLIC_SITE_URL` for auth redirects in local and deployed environments.
+*Note:* If Supabase credentials are not provided, the UI falls back to rendering local mock data, and auth-sensitive areas display configuration notices without breaking the application logic.
 
-Without Supabase credentials, the UI still renders from local mock data and auth-sensitive areas show configuration notices instead of failing hard.
+## 🗄 Database Setup
 
-## Database
+The database schema and policies are maintained through Supabase migrations. You can push the initial definitions to your active Supabase environment using the CLI or by running SQL directly from the project tracking.
 
-The initial schema lives in [supabase/migrations/20260401133000_initial_schema.sql](/Users/mehdiazaiez/Documents/Poly/Genie Informatique /Codex/Findy/supabase/migrations/20260401133000_initial_schema.sql).
+- **Initial schema location**: `supabase/migrations/20260401133000_initial_schema.sql`
+- **Initial sample data**: `supabase/seed.sql` 
 
-It includes:
+## 🗺 Documentation
 
-- profiles
-- categories
-- places
-- place categories
-- reviews
-- favorites
-- row level security policies
-- rating aggregation triggers
+For detailed information on the project lifecycle, refer to the documentation:
+1. [MVP Roadmap (`docs/mvp-roadmap.md`)](docs/mvp-roadmap.md) — Tracks completed features, pending items, and priority sequence.
+2. [Technical Specifications (`Findy Technical Specifications.md`)](./Findy%20Technical%20Specifications.md) — Holds the initial technical requirements, product scope, and architecture guidelines.
 
-Seed data lives in [supabase/seed.sql](/Users/mehdiazaiez/Documents/Poly/Genie Informatique /Codex/Findy/supabase/seed.sql).
-
-## Authentication
-
-The web app now includes:
-
-- cookie-backed Supabase SSR sessions
-- sign in, sign up, sign out, forgot password, and reset password flows
-- auth callback handling at `/auth/callback`
-- protected dashboard routes
-- admin role checks against the `profiles.role` column
-
-## Current State
-
-The repository is ready for the next implementation slices:
-
-1. replace mock search and place detail data with live Supabase queries
-2. wire review and favorite mutations for authenticated users
-3. connect dashboard metrics to real user data
-4. add admin CRUD forms for places and categories
+---
+*Built incrementally following a solo developer framework sequence.*
