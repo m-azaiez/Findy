@@ -125,7 +125,8 @@ export const featuredReviews: Review[] = [
     authorName: "Nora Tremblay",
     rating: 5,
     comment: "The space feels calm without being sterile, and the service pace matches the atmosphere.",
-    createdAt: "2026-03-24T10:00:00.000Z"
+    createdAt: "2026-03-24T10:00:00.000Z",
+    updatedAt: "2026-03-24T10:00:00.000Z"
   },
   {
     id: "review-2",
@@ -134,7 +135,8 @@ export const featuredReviews: Review[] = [
     authorName: "Alex Chen",
     rating: 5,
     comment: "Best at the end of the day. The view opens up gradually and the whole place feels intentional.",
-    createdAt: "2026-03-22T16:30:00.000Z"
+    createdAt: "2026-03-22T16:30:00.000Z",
+    updatedAt: "2026-03-22T16:30:00.000Z"
   },
   {
     id: "review-3",
@@ -143,6 +145,7 @@ export const featuredReviews: Review[] = [
     authorName: "Mina Roy",
     rating: 4,
     comment: "Small footprint, strong curation, and a nice mix of print objects and contemporary work.",
-    createdAt: "2026-03-20T12:15:00.000Z"
+    createdAt: "2026-03-20T12:15:00.000Z",
+    updatedAt: "2026-03-20T12:15:00.000Z"
   }
 ];

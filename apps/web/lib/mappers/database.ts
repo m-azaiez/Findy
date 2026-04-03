@@ -79,7 +79,8 @@ export function mapReviewRow(
     authorName: options.profile?.full_name ?? options.profile?.username ?? "Community member",
     rating: Number(review.rating),
     comment: review.comment,
-    createdAt: review.created_at
+    createdAt: review.created_at,
+    updatedAt: review.updated_at
   };
 }
 

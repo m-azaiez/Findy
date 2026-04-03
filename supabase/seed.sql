@@ -51,8 +51,8 @@ values
     'Canada',
     '127 Saint-Ambroise Street',
     'mid-range',
-    4.7,
-    128,
+    0,
+    0,
     true,
     'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80',
     array['coffee', 'design-led', 'all-day'],
@@ -76,8 +76,8 @@ values
     'Canada',
     '18 Panorama Avenue',
     'budget',
-    4.8,
-    86,
+    0,
+    0,
     true,
     'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80',
     array['sunset', 'scenic', 'outdoor'],
@@ -101,8 +101,8 @@ values
     'Canada',
     '42 Mercer Street',
     'mid-range',
-    4.5,
-    41,
+    0,
+    0,
     false,
     'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=80',
     array['art', 'independent', 'curated'],
@@ -138,3 +138,19 @@ values
   ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '22222222-2222-2222-2222-222222222222'),
   ('cccccccc-cccc-cccc-cccc-cccccccccccc', '33333333-3333-3333-3333-333333333333')
 on conflict do nothing;
+
+update public.places as places
+set
+  average_rating = stats.average_rating,
+  review_count = stats.review_count,
+  updated_at = timezone('utc', now())
+from (
+  select
+    place.id,
+    coalesce(round(avg(review.rating)::numeric, 1), 0) as average_rating,
+    count(review.id)::integer as review_count
+  from public.places as place
+  left join public.reviews as review on review.place_id = place.id
+  group by place.id
+) as stats
+where places.id = stats.id;
