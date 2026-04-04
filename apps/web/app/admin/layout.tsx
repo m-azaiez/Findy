@@ -3,6 +3,8 @@ import { Notice } from "@/components/ui/notice";
 import { adminNavigation } from "@/lib/constants/navigation";
 import { requireAdmin } from "@/services/auth.service";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminLayout({
   children
 }: Readonly<{

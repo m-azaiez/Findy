@@ -3,6 +3,8 @@ import { Notice } from "@/components/ui/notice";
 import { dashboardNavigation } from "@/lib/constants/navigation";
 import { getAuthContext } from "@/services/auth.service";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardLayout({
   children
 }: Readonly<{
