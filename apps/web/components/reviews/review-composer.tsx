@@ -10,7 +10,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Notice } from "@/components/ui/notice";
 import { StarRatingInput } from "@/components/ui/star-rating-input";
 import { cn } from "@/lib/utils/cn";
-import { type Review } from "@/types/domain";
+import { type Review } from "@findy/shared/domain";
 
 type ReviewComposerProps = {
   initialReview: Review | null;

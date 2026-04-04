@@ -3,14 +3,14 @@
 import { redirect } from "next/navigation";
 
 import { hasSupabaseCredentials } from "@/lib/supabase/env";
+import { getSiteUrl } from "@/lib/utils/url.server";
+import { sanitizeRedirectPath, withQuery } from "@findy/shared/utils/url";
 import {
   forgotPasswordSchema,
   resetPasswordSchema,
   signInSchema,
   signUpSchema
-} from "@/lib/validations/auth";
-import { getSiteUrl } from "@/lib/utils/url.server";
-import { sanitizeRedirectPath, withQuery } from "@/lib/utils/url";
+} from "@findy/shared/validations/auth";
 import {
   sendPasswordResetEmail,
   signInWithPassword,

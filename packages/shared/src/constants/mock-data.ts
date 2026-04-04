@@ -1,4 +1,4 @@
-import { type Category, type Place, type Review } from "@/types/domain";
+import { type Category, type Place, type Review } from "../domain";
 
 export const featuredCategories: Category[] = [
   {

@@ -1,6 +1,3 @@
--- Compatibility seed entrypoint kept at the Supabase root.
--- Mirror this file into supabase/seed/ when you add more modular seed files.
-
 insert into public.categories (id, name, slug, description)
 values
   (

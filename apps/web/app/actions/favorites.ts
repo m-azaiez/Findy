@@ -3,9 +3,9 @@
 import { revalidatePath } from "next/cache";
 
 import { hasSupabaseCredentials } from "@/lib/supabase/env";
-import { sanitizeRedirectPath } from "@/lib/utils/url";
-import { toggleFavoriteSchema } from "@/lib/validations/favorites";
 import { FavoriteAuthError, FavoriteConfigError, toggleFavoritePlace } from "@/services/favorites.service";
+import { sanitizeRedirectPath } from "@findy/shared/utils/url";
+import { toggleFavoriteSchema } from "@findy/shared/validations/favorites";
 
 export type FavoriteActionState = {
   status: "idle" | "success" | "error";

@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/c
 import { Notice } from "@/components/ui/notice";
 import { requireUser } from "@/services/auth.service";
 import { listFavoritePlaces } from "@/services/favorites.service";
-import { type Place } from "@/types/domain";
+import { type Place } from "@findy/shared/domain";
 
 export default async function FavoritesPage() {
   const authContext = await requireUser("/dashboard/favorites");

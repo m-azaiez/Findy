@@ -2,10 +2,10 @@ import { redirect } from "next/navigation";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Notice } from "@/components/ui/notice";
-import { sanitizeRedirectPath, withQuery } from "@/lib/utils/url";
 import { getAuthContext } from "@/services/auth.service";
 import { listRecentReviews } from "@/services/reviews.service";
-import { type Review } from "@/types/domain";
+import { type Review } from "@findy/shared/domain";
+import { sanitizeRedirectPath, withQuery } from "@findy/shared/utils/url";
 
 export const dynamic = "force-dynamic";
 

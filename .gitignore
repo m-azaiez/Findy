@@ -78,6 +78,9 @@ web_modules/
 .next
 .next-dev
 out
+**/.expo/
+**/.expo-shared/
+web-build
 
 # macOS / local editor noise
 .DS_Store

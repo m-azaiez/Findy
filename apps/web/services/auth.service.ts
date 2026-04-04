@@ -8,9 +8,9 @@ import {
   type ResetPasswordInput,
   type SignInInput,
   type SignUpInput
-} from "@/lib/validations/auth";
-import { sanitizeRedirectPath, withQuery } from "@/lib/utils/url";
-import { type Database } from "@/types/database";
+} from "@findy/shared/validations/auth";
+import { sanitizeRedirectPath, withQuery } from "@findy/shared/utils/url";
+import { type Database } from "@findy/shared/database";
 
 type ProfileSummary = Pick<
   Database["public"]["Tables"]["profiles"]["Row"],

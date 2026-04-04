@@ -4,12 +4,15 @@
   "private": true,
   "packageManager": "npm@11.6.2",
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace @findy/web",
-    "build": "npm run build --workspace @findy/web",
-    "lint": "npm run lint --workspace @findy/web",
-    "typecheck": "npm run typecheck --workspace @findy/web"
+    "dev": "npm run dev:web",
+    "dev:web": "npm run dev --workspace @findy/web",
+    "dev:mobile": "npm run dev --workspace @findy/mobile",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
   }
 }

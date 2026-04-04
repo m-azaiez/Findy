@@ -8,7 +8,7 @@ import {
   readFirstSearchParam,
   sanitizeRedirectPath,
   type SearchParamsRecord
-} from "@/lib/utils/url";
+} from "@findy/shared/utils/url";
 import { getAuthContext } from "@/services/auth.service";
 
 type RegisterPageProps = {

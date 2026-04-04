@@ -8,7 +8,7 @@ import { createPlaceAction, type CreatePlaceActionState } from "@/app/actions/pl
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Notice } from "@/components/ui/notice";
 import { cn } from "@/lib/utils/cn";
-import { type Category, type PriceTier } from "@/types/domain";
+import { type Category, type PriceTier } from "@findy/shared/domain";
 
 type CreatePlaceFormProps = {
   categories: Category[];

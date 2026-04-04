@@ -1,7 +1,7 @@
 import { createBrowserClient } from "@supabase/ssr";
 
 import { supabaseAnonKey, supabaseUrl, hasSupabaseCredentials } from "@/lib/supabase/env";
-import { type Database } from "@/types/database";
+import { type Database } from "@findy/shared/database";
 
 export function createBrowserSupabaseClient() {
   if (!hasSupabaseCredentials) {

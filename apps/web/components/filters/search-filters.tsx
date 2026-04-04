@@ -1,13 +1,13 @@
 "use client";
 
-import { featuredCategories } from "@/lib/constants/mock-data";
 import { useSearchFilters } from "@/hooks/use-search-filters";
-import { type SearchFiltersState } from "@/types/domain";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils/cn";
+import { featuredCategories } from "@findy/shared/constants/mock-data";
+import { type SearchFiltersState } from "@findy/shared/domain";
 
 type SearchFiltersProps = {
   initialFilters: SearchFiltersState;

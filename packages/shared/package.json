@@ -1,0 +1,30 @@
+{
+  "name": "@findy/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./constants/mock-data": "./src/constants/mock-data.ts",
+    "./database": "./src/database.ts",
+    "./domain": "./src/domain.ts",
+    "./mappers/database": "./src/mappers/database.ts",
+    "./utils/url": "./src/utils/url.ts",
+    "./validations/auth": "./src/validations/auth.ts",
+    "./validations/favorites": "./src/validations/favorites.ts",
+    "./validations/place": "./src/validations/place.ts",
+    "./validations/review": "./src/validations/review.ts",
+    "./validations/search": "./src/validations/search.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

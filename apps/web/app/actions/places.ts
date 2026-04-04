@@ -3,10 +3,10 @@
 import { revalidatePath } from "next/cache";
 
 import { hasSupabaseCredentials } from "@/lib/supabase/env";
-import { createPlaceSchema } from "@/lib/validations/place";
-import { sanitizeRedirectPath } from "@/lib/utils/url";
 import { getAuthContext } from "@/services/auth.service";
 import { PlaceCategoryError, PlaceConfigError, PlaceConflictError, createPlace } from "@/services/places.service";
+import { sanitizeRedirectPath } from "@findy/shared/utils/url";
+import { createPlaceSchema } from "@findy/shared/validations/place";
 
 export type CreatePlaceActionState = {
   fieldErrors?: {

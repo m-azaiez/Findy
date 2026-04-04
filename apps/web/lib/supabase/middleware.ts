@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
 import { hasSupabaseCredentials, supabaseAnonKey, supabaseUrl } from "@/lib/supabase/env";
-import { type Database } from "@/types/database";
+import { type Database } from "@findy/shared/database";
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({

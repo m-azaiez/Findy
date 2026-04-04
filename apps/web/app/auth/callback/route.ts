@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { hasSupabaseCredentials } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { sanitizeRedirectPath, withQuery } from "@/lib/utils/url";
+import { sanitizeRedirectPath, withQuery } from "@findy/shared/utils/url";
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);

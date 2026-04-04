@@ -1,10 +1,10 @@
-import { featuredReviews } from "@/lib/constants/mock-data";
 import { hasSupabaseCredentials } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { mapReviewRow } from "@/lib/mappers/database";
-import { type ReviewInput } from "@/lib/validations/review";
-import { type Database } from "@/types/database";
-import { type Review } from "@/types/domain";
+import { featuredReviews } from "@findy/shared/constants/mock-data";
+import { type Database } from "@findy/shared/database";
+import { mapReviewRow } from "@findy/shared/mappers/database";
+import { type Review } from "@findy/shared/domain";
+import { type ReviewInput } from "@findy/shared/validations/review";
 
 type ReviewsClient = Awaited<ReturnType<typeof createServerSupabaseClient>>;
 type ReviewRow = Database["public"]["Tables"]["reviews"]["Row"];

@@ -3,11 +3,11 @@ import { SectionHeading } from "@/components/layout/section-heading";
 import { PlaceCard } from "@/components/places/place-card";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { Notice } from "@/components/ui/notice";
-import { searchFiltersSchema } from "@/lib/validations/search";
 import { getAuthContext } from "@/services/auth.service";
 import { attachFavoriteState } from "@/services/favorites.service";
 import { searchPlaces } from "@/services/places.service";
-import { type Place } from "@/types/domain";
+import { type Place } from "@findy/shared/domain";
+import { searchFiltersSchema } from "@findy/shared/validations/search";
 
 type SearchPageProps = {
   searchParams?: Promise<{
