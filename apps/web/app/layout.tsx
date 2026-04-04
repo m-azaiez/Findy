@@ -9,7 +9,12 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Findy",
-  description: "Mobile-first discovery for places worth saving."
+  description: "Mobile-first discovery for places worth saving.",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png"
+  }
 };
 
 export default function RootLayout({
