@@ -1,15 +1,19 @@
 import { Link } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { type Place } from "@findy/shared/domain";
 
+import { getPlaceLocationLabel, getPlacePrimaryCategory } from "../lib/places";
 import { palette } from "../theme";
 
 type PlacePreviewCardProps = {
+  isFavorited?: boolean;
   place: Place;
 };
 
-export function PlacePreviewCard({ place }: PlacePreviewCardProps) {
+export function PlacePreviewCard({ place, isFavorited = false }: PlacePreviewCardProps) {
+  const category = getPlacePrimaryCategory(place);
+
   return (
     <Link
       href={{
@@ -21,12 +25,24 @@ export function PlacePreviewCard({ place }: PlacePreviewCardProps) {
       asChild
     >
       <Pressable style={({ pressed }) => [styles.card, pressed ? styles.cardPressed : undefined]}>
+        <Image source={{ uri: place.coverImageUrl }} style={styles.image} />
+
         <View style={styles.row}>
           <View style={styles.meta}>
+            <View style={styles.badges}>
+              {category ? (
+                <View style={styles.badgePill}>
+                  <Text style={styles.badgePillText}>{category.name}</Text>
+                </View>
+              ) : null}
+              {isFavorited ? (
+                <View style={[styles.badgePill, styles.savedPill]}>
+                  <Text style={[styles.badgePillText, styles.savedPillText]}>Saved</Text>
+                </View>
+              ) : null}
+            </View>
             <Text style={styles.title}>{place.name}</Text>
-            <Text style={styles.location}>
-              {place.city}, {place.country}
-            </Text>
+            <Text style={styles.location}>{getPlaceLocationLabel(place)}</Text>
           </View>
           <Text style={styles.rating}>{place.averageRating.toFixed(1)}</Text>
         </View>
@@ -34,8 +50,8 @@ export function PlacePreviewCard({ place }: PlacePreviewCardProps) {
         <Text style={styles.description}>{place.shortDescription}</Text>
 
         <View style={styles.footer}>
-          <Text style={styles.badge}>{place.priceTier}</Text>
-          <Text style={styles.caption}>{place.isOpenNow ? "Open now" : "Closed now"}</Text>
+          <Text style={styles.caption}>{place.reviewCount} reviews</Text>
+          <Text style={styles.badge}>{place.isOpenNow ? "Open now" : "Closed now"}</Text>
         </View>
       </Pressable>
     </Link>
@@ -49,11 +65,17 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     gap: 12,
+    overflow: "hidden",
     padding: 16
   },
   cardPressed: {
     opacity: 0.92,
     transform: [{ scale: 0.995 }]
+  },
+  image: {
+    borderRadius: 16,
+    height: 184,
+    width: "100%"
   },
   row: {
     alignItems: "flex-start",
@@ -63,7 +85,29 @@ const styles = StyleSheet.create({
   },
   meta: {
     flex: 1,
-    gap: 4
+    gap: 6
+  },
+  badges: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8
+  },
+  badgePill: {
+    backgroundColor: "#fff1de",
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 6
+  },
+  badgePillText: {
+    color: palette.brand,
+    fontSize: 12,
+    fontWeight: "700"
+  },
+  savedPill: {
+    backgroundColor: palette.text
+  },
+  savedPillText: {
+    color: "#fffdf8"
   },
   title: {
     color: palette.text,
@@ -93,8 +137,7 @@ const styles = StyleSheet.create({
   badge: {
     color: palette.brand,
     fontSize: 13,
-    fontWeight: "700",
-    textTransform: "capitalize"
+    fontWeight: "700"
   },
   caption: {
     color: palette.muted,

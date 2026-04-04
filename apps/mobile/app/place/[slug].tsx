@@ -1,13 +1,22 @@
 import { Link, useLocalSearchParams } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { AppScreen } from "../../src/components/app-screen";
-import { getFeaturedPlaceBySlug } from "../../src/lib/places";
+import { FavoriteButton } from "../../src/components/favorite-button";
+import { useFavorites } from "../../src/lib/favorites";
+import {
+  formatPriceTier,
+  getFeaturedPlaceBySlug,
+  getPlaceLocationLabel,
+  getPlacePrimaryCategory,
+  listPlaceReviews
+} from "../../src/lib/places";
 import { palette } from "../../src/theme";
 
 export default function PlaceDetailsScreen() {
   const { slug } = useLocalSearchParams<{ slug?: string }>();
   const place = getFeaturedPlaceBySlug(slug);
+  const { isFavorite } = useFavorites();
 
   if (!place) {
     return (
@@ -21,26 +30,75 @@ export default function PlaceDetailsScreen() {
     );
   }
 
+  const category = getPlacePrimaryCategory(place);
+  const reviews = listPlaceReviews(place.id);
+  const featuredReview = reviews[0];
+
   return (
     <AppScreen
-      eyebrow={place.city}
+      eyebrow={category?.name ?? place.city}
       title={place.name}
-      description={`${place.shortDescription} This detail route is now ready for real API-backed place loading in the next slice.`}
+      description={place.shortDescription}
     >
-      <View style={styles.panel}>
-        <Text style={styles.sectionTitle}>Quick summary</Text>
-        <Text style={styles.panelText}>
-          {place.averageRating.toFixed(1)} rating · {place.reviewCount} reviews · {place.priceTier}
-        </Text>
-        <Text style={styles.panelText}>
-          {place.address}, {place.country}
-        </Text>
+      <Image source={{ uri: place.coverImageUrl }} style={styles.heroImage} />
+
+      <View style={styles.heroMeta}>
+        {category ? (
+          <View style={styles.heroChip}>
+            <Text style={styles.heroChipText}>{category.name}</Text>
+          </View>
+        ) : null}
+        <View style={styles.heroChip}>
+          <Text style={styles.heroChipText}>{place.city}</Text>
+        </View>
+        <View style={styles.heroChip}>
+          <Text style={styles.heroChipText}>{place.isOpenNow ? "Open now" : "Closed now"}</Text>
+        </View>
+      </View>
+
+      <Text style={styles.locationLead}>{getPlaceLocationLabel(place)}</Text>
+
+      <View style={styles.actions}>
+        <FavoriteButton placeId={place.id} isFavorited={isFavorite(place.id)} />
+        <Pressable style={styles.secondaryAction}>
+          <Text style={styles.secondaryActionText}>Reviews soon</Text>
+        </Pressable>
       </View>
 
       <View style={styles.panel}>
-        <Text style={styles.sectionTitle}>Why it belongs in the MVP</Text>
+        <Text style={styles.sectionTitle}>At a glance</Text>
+        <Text style={styles.panelText}>
+          {place.averageRating.toFixed(1)} rating · {place.reviewCount} reviews · {formatPriceTier(place.priceTier)}
+        </Text>
+        <Text style={styles.panelText}>{getPlaceLocationLabel(place)}</Text>
+      </View>
+
+      <View style={styles.panel}>
+        <Text style={styles.sectionTitle}>About this place</Text>
         <Text style={styles.panelBody}>{place.description}</Text>
       </View>
+
+      <View style={styles.panel}>
+        <Text style={styles.sectionTitle}>Opening hours</Text>
+        <View style={styles.hoursList}>
+          {Object.entries(place.openingHours).map(([day, hours]) => (
+            <View key={day} style={styles.hoursRow}>
+              <Text style={styles.hoursDay}>{day}</Text>
+              <Text style={styles.hoursValue}>{hours}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      {featuredReview ? (
+        <View style={styles.panel}>
+          <Text style={styles.sectionTitle}>Recent community note</Text>
+          <Text style={styles.reviewMeta}>
+            {featuredReview.authorName} · {featuredReview.rating.toFixed(1)} / 5
+          </Text>
+          <Text style={styles.panelBody}>{featuredReview.comment}</Text>
+        </View>
+      ) : null}
 
       <View style={styles.tags}>
         {place.tags.map((tag) => (
@@ -67,6 +125,52 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "700"
   },
+  heroImage: {
+    borderRadius: 24,
+    height: 240,
+    width: "100%"
+  },
+  heroMeta: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10
+  },
+  heroChip: {
+    backgroundColor: "#fff1de",
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8
+  },
+  heroChipText: {
+    color: palette.brand,
+    fontSize: 13,
+    fontWeight: "700"
+  },
+  locationLead: {
+    color: palette.muted,
+    fontSize: 15,
+    lineHeight: 22
+  },
+  actions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10
+  },
+  secondaryAction: {
+    alignItems: "center",
+    backgroundColor: "#fffdf8",
+    borderColor: palette.border,
+    borderRadius: 999,
+    borderWidth: 1,
+    justifyContent: "center",
+    minHeight: 46,
+    paddingHorizontal: 16
+  },
+  secondaryActionText: {
+    color: palette.text,
+    fontSize: 14,
+    fontWeight: "700"
+  },
   panel: {
     backgroundColor: "#fff8ef",
     borderColor: palette.border,
@@ -89,6 +193,31 @@ const styles = StyleSheet.create({
     color: palette.text,
     fontSize: 15,
     lineHeight: 24
+  },
+  hoursList: {
+    gap: 8
+  },
+  hoursRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12
+  },
+  hoursDay: {
+    color: palette.text,
+    fontSize: 14,
+    fontWeight: "700",
+    textTransform: "capitalize"
+  },
+  hoursValue: {
+    color: palette.muted,
+    flexShrink: 1,
+    fontSize: 14,
+    textAlign: "right"
+  },
+  reviewMeta: {
+    color: palette.brand,
+    fontSize: 14,
+    fontWeight: "700"
   },
   tags: {
     flexDirection: "row",

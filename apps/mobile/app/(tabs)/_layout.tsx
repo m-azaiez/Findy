@@ -55,6 +55,13 @@ export default function TabsLayout() {
           tabBarLabel: "Favorites"
         }}
       />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          tabBarLabel: "Profile"
+        }}
+      />
     </Tabs>
   );
 }
