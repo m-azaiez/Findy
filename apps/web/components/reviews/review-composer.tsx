@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { startTransition, useActionState, useEffect } from "react";
+import { startTransition, useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 
 import { createReviewAction, type ReviewActionState, updateReviewAction } from "@/app/actions/reviews";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Notice } from "@/components/ui/notice";
+import { StarRatingInput } from "@/components/ui/star-rating-input";
 import { cn } from "@/lib/utils/cn";
 import { type Review } from "@/types/domain";
 
@@ -22,6 +23,14 @@ type ReviewComposerProps = {
 const initialState: ReviewActionState = {
   status: "idle"
 };
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) {
+    return null;
+  }
+
+  return <p className="text-sm text-red-700">{message}</p>;
+}
 
 function ReviewSubmitButton({ hasExistingReview }: { hasExistingReview: boolean }) {
   const { pending } = useFormStatus();
@@ -43,6 +52,7 @@ export function ReviewComposer({
   const router = useRouter();
   const hasExistingReview = Boolean(initialReview);
   const [state, formAction] = useActionState(hasExistingReview ? updateReviewAction : createReviewAction, initialState);
+  const [rating, setRating] = useState(initialReview?.rating ?? 5);
   const loginHref = `/login?${new URLSearchParams({ next: returnTo }).toString()}`;
 
   useEffect(() => {
@@ -54,6 +64,10 @@ export function ReviewComposer({
       router.refresh();
     });
   }, [router, state.status, state.reviewId, state.reviewCount, state.averageRating]);
+
+  useEffect(() => {
+    setRating(initialReview?.rating ?? 5);
+  }, [initialReview?.id, initialReview?.rating]);
 
   if (!isConfigured) {
     return <Notice tone="info">Review publishing becomes available once Supabase auth is configured.</Notice>;
@@ -88,17 +102,13 @@ export function ReviewComposer({
 
         <label className="block space-y-2">
           <span className="text-sm font-medium text-foreground/75">Rating</span>
-          <select
+          <StarRatingInput
             name="rating"
-            defaultValue={String(initialReview?.rating ?? 5)}
-            className="h-11 w-full rounded-xl border border-foreground/10 bg-white px-3 text-sm text-foreground outline-none transition focus:border-brand"
-          >
-            {[5, 4, 3, 2, 1].map((rating) => (
-              <option key={rating} value={rating}>
-                {rating} / 5
-              </option>
-            ))}
-          </select>
+            label="Review rating"
+            value={rating}
+            onChange={setRating}
+          />
+          <FieldError message={state.fieldErrors?.rating} />
         </label>
 
         <label className="block space-y-2">
@@ -110,6 +120,7 @@ export function ReviewComposer({
             className="w-full rounded-2xl border border-foreground/10 bg-white px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand"
             placeholder="Share what stood out, what worked, and what other people should know."
           />
+          <FieldError message={state.fieldErrors?.comment} />
         </label>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -117,7 +128,9 @@ export function ReviewComposer({
           {state.status === "success" && state.message ? <p className="text-sm text-emerald-700">{state.message}</p> : null}
         </div>
 
-        {state.status === "error" && state.message ? <Notice tone="error">{state.message}</Notice> : null}
+        {state.status === "error" && state.message && !state.fieldErrors?.comment && !state.fieldErrors?.rating ? (
+          <Notice tone="error">{state.message}</Notice>
+        ) : null}
       </form>
 
       {initialReview ? (

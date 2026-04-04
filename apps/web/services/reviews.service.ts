@@ -80,17 +80,23 @@ export async function listReviewsForPlace(placeId: string): Promise<Review[]> {
   return hydrateReviews(client, reviewRows ?? []);
 }
 
-export async function listRecentReviews(): Promise<Review[]> {
+export async function listRecentReviews(userId?: string): Promise<Review[]> {
   if (!hasSupabaseCredentials) {
     return featuredReviews;
   }
 
   const client = await createServerSupabaseClient();
-  const { data: reviewRows, error } = await client
+  let query = client
     .from("reviews")
     .select("*")
     .order("created_at", { ascending: false })
     .limit(6);
+
+  if (userId) {
+    query = query.eq("user_id", userId);
+  }
+
+  const { data: reviewRows, error } = await query;
 
   if (error) {
     throw error;

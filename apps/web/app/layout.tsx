@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 
 import { QueryProvider } from "@/components/providers/query-provider";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -17,8 +18,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="light" suppressHydrationWarning>
       <body>
+        <Script id="theme-sync" strategy="beforeInteractive">
+          {`
+            (() => {
+              const root = document.documentElement;
+              const media = window.matchMedia("(prefers-color-scheme: dark)");
+
+              const applyTheme = () => {
+                const theme = media.matches ? "dark" : "light";
+                root.dataset.theme = theme;
+                root.style.colorScheme = theme;
+              };
+
+              applyTheme();
+
+              if (typeof media.addEventListener === "function") {
+                media.addEventListener("change", applyTheme);
+              } else if (typeof media.addListener === "function") {
+                media.addListener(applyTheme);
+              }
+            })();
+          `}
+        </Script>
         <QueryProvider>
           <div className="relative flex min-h-screen flex-col">
             <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[32rem] bg-hero-grid" />

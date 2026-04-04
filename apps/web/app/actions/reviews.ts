@@ -18,6 +18,12 @@ import {
 
 export type ReviewActionState = {
   averageRating?: number;
+  fieldErrors?: {
+    comment?: string;
+    placeId?: string;
+    rating?: string;
+    reviewId?: string;
+  };
   message?: string;
   reviewCount?: number;
   reviewId?: string;
@@ -44,6 +50,14 @@ function toErrorState(message: string): ReviewActionState {
     message,
     status: "error"
   };
+}
+
+function getReviewFieldErrors(fieldErrors: Record<string, string[] | undefined>): ReviewActionState["fieldErrors"] {
+  return Object.fromEntries(
+    Object.entries(fieldErrors)
+      .filter(([, value]) => Boolean(value?.[0]))
+      .map(([key, value]) => [key, value?.[0]])
+  );
 }
 
 function mapReviewError(error: unknown) {
@@ -76,7 +90,11 @@ export async function createReviewAction(
   });
 
   if (!parsed.success) {
-    return toErrorState(parsed.error.issues[0]?.message ?? initialErrorMessage);
+    return {
+      fieldErrors: getReviewFieldErrors(parsed.error.flatten().fieldErrors),
+      message: parsed.error.issues[0]?.message ?? initialErrorMessage,
+      status: "error"
+    };
   }
 
   try {
@@ -118,7 +136,11 @@ export async function updateReviewAction(
   });
 
   if (!parsed.success) {
-    return toErrorState(parsed.error.issues[0]?.message ?? initialErrorMessage);
+    return {
+      fieldErrors: getReviewFieldErrors(parsed.error.flatten().fieldErrors),
+      message: parsed.error.issues[0]?.message ?? initialErrorMessage,
+      status: "error"
+    };
   }
 
   try {
@@ -156,7 +178,11 @@ export async function deleteReviewAction(
   });
 
   if (!parsed.success) {
-    return toErrorState(parsed.error.issues[0]?.message ?? initialErrorMessage);
+    return {
+      fieldErrors: getReviewFieldErrors(parsed.error.flatten().fieldErrors),
+      message: parsed.error.issues[0]?.message ?? initialErrorMessage,
+      status: "error"
+    };
   }
 
   try {

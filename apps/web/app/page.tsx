@@ -6,9 +6,9 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { Notice } from "@/components/ui/notice";
 import { PlaceCard } from "@/components/places/place-card";
-import { featuredCategories } from "@/lib/constants/mock-data";
 import { cn } from "@/lib/utils/cn";
 import { getAuthContext } from "@/services/auth.service";
+import { listCategories } from "@/services/categories.service";
 import { attachFavoriteState } from "@/services/favorites.service";
 import { getFeaturedPlaces } from "@/services/places.service";
 
@@ -28,7 +28,11 @@ const launchPillars = [
 ];
 
 export default async function HomePage() {
-  const [authContext, featuredPlaces] = await Promise.all([getAuthContext(), getFeaturedPlaces()]);
+  const [authContext, featuredPlaces, categories] = await Promise.all([
+    getAuthContext(),
+    getFeaturedPlaces(),
+    listCategories()
+  ]);
   let places = featuredPlaces;
   let favoriteLoadError: string | null = null;
 
@@ -89,24 +93,30 @@ export default async function HomePage() {
               <CardContent className="space-y-5 p-6">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-foreground/60">Launch categories</span>
-                  <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-foreground/60">
-                    visual-first
-                  </span>
+                  <Link
+                    href="/search"
+                    className="rounded-full bg-white px-3 py-1 text-xs font-medium text-foreground/60 transition hover:text-foreground"
+                  >
+                    browse all
+                  </Link>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {featuredCategories.map((category) => (
-                    <Badge key={category.id} tone="default">
-                      {category.name}
-                    </Badge>
+                  {categories.slice(0, 6).map((category) => (
+                    <Link key={category.id} href={`/search?category=${encodeURIComponent(category.slug)}`}>
+                      <Badge
+                        tone="default"
+                        className="cursor-pointer transition hover:bg-accent hover:text-accent-foreground"
+                      >
+                        {category.name}
+                      </Badge>
+                    </Link>
                   ))}
                 </div>
                 <div className="space-y-3 rounded-2xl border border-brand/10 bg-white/80 p-4">
-                  <p className="text-sm font-medium text-foreground/60">Next build focus</p>
-                  <ul className="space-y-2 text-sm text-foreground/80">
-                    <li>Live Supabase authentication flows</li>
-                    <li>Search query string binding</li>
-                    <li>Review and favorite mutations</li>
-                  </ul>
+                  <p className="text-sm font-medium text-foreground/60">Quick start</p>
+                  <p className="text-sm text-foreground/80">
+                    Pick a category to open search with a real filter applied, or jump into the full search surface.
+                  </p>
                 </div>
               </CardContent>
             </Card>

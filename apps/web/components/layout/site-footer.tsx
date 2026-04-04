@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const footerLinks = [
@@ -11,8 +12,8 @@ export function SiteFooter() {
     <footer className="shell pb-8 pt-16">
       <div className="rounded-[1.75rem] border border-foreground/10 bg-white/70 px-6 py-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="font-medium">Findy</p>
+          <div className="space-y-3">
+            <Image src="/logo.png" alt="Findy" width={156} height={68} className="h-8 w-auto rounded-sm" />
             <p className="text-sm text-foreground/60">Project foundation built for a Supabase-backed MVP.</p>
           </div>
           <div className="flex items-center gap-4 text-sm text-foreground/60">

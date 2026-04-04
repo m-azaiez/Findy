@@ -76,7 +76,11 @@ web_modules/
 
 # Next.js build output
 .next
+.next-dev
 out
+
+# macOS / local editor noise
+.DS_Store
 
 # Nuxt.js build / generate output
 .nuxt

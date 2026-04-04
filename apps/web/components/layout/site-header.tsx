@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { signOutAction } from "@/app/(auth)/actions";
@@ -27,13 +28,14 @@ export async function SiteHeader() {
     <header className="shell sticky top-0 z-30 pt-4">
       <div className="glass-panel flex items-center justify-between rounded-full px-4 py-3">
         <Link href="/" className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-full bg-brand text-sm font-semibold text-brand-foreground">
-            F
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-foreground/50">Findy</p>
-            <p className="font-medium">Curated discovery</p>
-          </div>
+          <Image
+            src="/logo.png"
+            alt="Findy"
+            width={180}
+            height={80}
+            priority
+            className="h-10 w-auto rounded-md"
+          />
         </Link>
         <nav className="hidden items-center gap-5 md:flex">
           {navigation.map((item) => (

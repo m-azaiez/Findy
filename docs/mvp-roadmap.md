@@ -36,6 +36,12 @@
   - authenticated toggle action
   - unauthenticated, loading, and error states
   - authenticated end-to-end toggle validation completed
+- review writes are implemented on the place detail page:
+  - create one review per user per place
+  - edit own review
+  - delete own review
+  - admin delete path in the service and action layer
+  - place detail summary now derives from real `reviews` rows for correct MVP behavior
 - the Next.js runtime issue caused by importing `next/headers` through shared URL helpers has been fixed by splitting client-safe and server-only URL utilities
 - a fresh dev-server smoke test is passing again for:
   - `/`
@@ -47,6 +53,12 @@
   - profile insert
   - profile update
 - Supabase Security Advisor hygiene has been improved with a forward migration that adds `set search_path = public` to `public.set_updated_at`
+- admin place creation MVP is implemented:
+  - admin-only `/admin/places` create form
+  - validation and category assignment
+  - success link to the newly created place
+  - input preservation on validation errors
+  - slug helper text and auto-derived slug until manual edit
 - basic empty states and error notices are working
 - the project has been verified with:
   - `npm run lint`
@@ -55,55 +67,64 @@
 
 ### What Is Still Missing In The Core Product Loop
 
-- authenticated review creation, editing, and deletion
 - dashboard data that reflects the current signed-in user
-- admin CRUD screens that replace direct SQL edits for content work
+- category management from the admin UI
+- place editing from the admin UI
+- review moderation/reporting workflows beyond basic author and admin mutation paths
+- denormalized place stats cleanup so `places.average_rating` and `places.review_count` become trustworthy again everywhere
 - deployment and operational setup for repeatable releases
 
 ## Priority Order
 
-### 1. Review Writes
+### 1. Real Dashboard Data
 
 Reason:
-- this is now the biggest missing user action after search and favorites
-- the schema, triggers, and read layer already exist, so this is the highest-value next slice
-- it completes the basic user loop: discover, save, review
+- the user loop already exists, but the dashboard still under-delivers after sign-in
+- favorites and review writes already exist, so the missing work is mostly read wiring and presentation
+- this is the smallest next slice with strong user-visible value
 
-### 2. Real Dashboard Data
-
-Reason:
-- the dashboard already exists structurally, so wiring it to real data is a low-risk follow-up
-- it makes authentication feel useful instead of just protective
-- it depends naturally on favorites and review writes
-
-### 3. Admin CRUD For Places And Categories
+### 2. Admin Category Management
 
 Reason:
-- a solo developer should stop depending on SQL edits as soon as the user loop is stable
-- lightweight admin tools are enough at this stage; full back-office complexity can wait
-- this unlocks faster content iteration without touching migrations or seed files
+- the new create-place form depends on existing categories
+- category management removes another SQL dependency for routine content work
+- it is a smaller and safer admin slice than full place editing
+
+### 3. Admin Place Editing
+
+Reason:
+- place creation exists, so editing is the next practical step
+- core fields, categories, and status should be editable without manual SQL
+- full delete/gallery/opening-hours can still wait
 
 ### 4. Review Moderation Basics
 
 Reason:
-- once review writes exist, moderation becomes a real product need
+- review writes now exist, so moderation becomes a real product need
 - the first version can stay intentionally small:
   - list reviews
   - remove abusive content
-  - optionally flag low-quality content
+  - capture standard user reports as a future-ready moderation input
 
-### 5. Image Upload And Storage
+### 5. Denormalized Stats Repair And Cleanup
+
+Reason:
+- the place detail page already bypasses the stale denormalized summary values
+- the data model should still be reconciled so search, cards, and future ranking can safely use place stats
+- this is infrastructure cleanup, not a blocker for current MVP UX
+
+### 6. Image Upload And Storage
 
 Reason:
 - useful, but not required to validate the core discovery loop
 - it adds storage, upload, and admin workflow complexity
-- it should come after admin CRUD for places is stable
+- it should come after the core admin content flows are stable
 
 ## Dependencies
 
 - auth must be working before favorites and review writes can be trusted
 - the app shell and server actions must stay runtime-stable before adding new write features
-- review writes depend on:
+- review writes depended on:
   - auth
   - `profiles`
   - `places`
@@ -115,6 +136,14 @@ Reason:
   - admin role security
   - protected admin routes
   - stable place and category schemas
+- admin place creation depends on existing categories, so category management is now a direct dependency for smoother content operations
+- review moderation depends on:
+  - review writes being implemented
+  - admin role enforcement
+  - a clear report or delete workflow
+- denormalized stats cleanup depends on:
+  - confirmed aggregate rules for ratings and counts
+  - a reliable recomputation strategy or a decision to compute more summaries from `reviews`
 - image upload depends on:
   - admin place editing
   - a stable storage strategy
@@ -123,31 +152,36 @@ Reason:
 ## Phase 1: MVP Completion
 
 Short description:
-Close the core user loop so a signed-in user can search, save places, write reviews, and see their own activity.
+Finish the user loop with a useful dashboard and enough admin tooling to add and adjust content without routine SQL edits.
 
 ### Product Tasks
 
-- add review create flow on place detail pages
-- add review edit and delete flow for the author
 - show real favorites and review history inside the dashboard
 - replace placeholder dashboard stats with live user-specific values
-- keep current empty and error states clean as write flows are added
+- add admin category creation so the place create flow is self-sufficient
+- add basic place editing for the same core fields exposed in the create form
+- keep current empty and error states clean as more write flows are added
 
 ### Technical Tasks
 
-- add review server actions and validation
-- wire review permissions for author and admin paths
-- verify RLS behavior for review insert, update, and delete
+- keep dashboard queries scoped to the signed-in user
+- add admin category server actions and validation
+- add admin place update server actions and validation
+- revalidate public and admin pages after content changes
+- reconcile or isolate stale denormalized place stats so public summaries stay trustworthy
 - add basic end-to-end smoke coverage for:
   - auth
   - favorites
   - review writes
+  - admin place creation
 
 ### Exit Criteria
 
 - a signed-in user can save a place
 - a signed-in user can create, edit, and delete their own review
-- place ratings update correctly after review changes
+- the dashboard shows live favorites and review history for the signed-in user
+- an admin can create places and categories from the UI
+- an admin can edit a place's core fields from the UI
 - dashboard favorites and review sections show live user data
 
 ## Phase 2: V1 Content Operations
@@ -157,24 +191,27 @@ Make the product manageable by one operator without manual SQL for normal conten
 
 ### Product Tasks
 
-- add admin CRUD for places
-- add admin CRUD for categories
+- extend place management from create/edit into fuller CRUD where justified
+- extend category management from create into edit flows
 - make admin review management usable for lightweight moderation
 - improve admin feedback for validation, save success, and failure states
+- add basic user review reporting intake for moderation follow-up
 
 ### Technical Tasks
 
-- build server actions and forms for admin create and edit flows
+- build the remaining server actions and forms for admin edit flows
 - validate slugs, category relations, and place payloads consistently
 - revalidate public pages after admin updates
 - harden admin-only access checks around every mutation
 - add a lightweight content fixture strategy for local testing
+- clean up denormalized place stats or formalize where aggregate values are computed from live reviews
 
 ### Exit Criteria
 
-- an admin can add and edit places from the UI
-- an admin can add and edit categories from the UI
+- an admin can manage places without SQL for normal content maintenance
+- an admin can manage categories without SQL
 - an admin can review and remove problematic reviews without SQL
+- standard user reports can be captured for later moderation action
 
 ## Phase 3: V1 Release Readiness
 
@@ -225,13 +262,14 @@ Invest in retention, discovery quality, and operating efficiency after the core 
 
 ## Recommended Solo Developer Sequence
 
-1. finish review writes because they complete the core user loop with the smallest surface-area increase
-2. wire the dashboard to real user data because the UI shell already exists and the dependency graph is simple
-3. build admin CRUD for places and categories so content updates stop depending on SQL
-4. add moderation basics only after real review traffic exists
-5. delay storage uploads, deployment polish, and advanced search until the MVP loop is clearly stable
+1. wire the dashboard to real user data because the user loop already exists and this is the highest-value remaining MVP gap
+2. add admin category management because it directly supports the new place creation flow
+3. add admin place editing so content updates stop depending on SQL after creation
+4. add review moderation and lightweight reporting once the operator tools are usable
+5. clean up denormalized stats and then delay storage uploads, deployment polish, and advanced search until the MVP loop is clearly stable
 
 ## Notes
 
 - admin access depends on `profiles.role = 'admin'`
 - the product still renders without Supabase credentials, but real auth and protected behavior only activate once env vars are configured
+- the place detail summary intentionally uses live `reviews` rows as the MVP source of truth instead of trusting denormalized place stats

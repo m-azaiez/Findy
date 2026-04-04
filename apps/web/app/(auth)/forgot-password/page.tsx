@@ -1,9 +1,7 @@
 import Link from "next/link";
 
-import { forgotPasswordAction } from "@/app/(auth)/actions";
-import { buttonVariants } from "@/components/ui/button";
+import { ForgotPasswordForm } from "@/components/auth/auth-forms";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Notice } from "@/components/ui/notice";
 import { readFirstSearchParam, type SearchParamsRecord } from "@/lib/utils/url";
 import { getAuthContext } from "@/services/auth.service";
@@ -31,12 +29,7 @@ export default async function ForgotPasswordPage({ searchParams }: ForgotPasswor
           {!authContext.isConfigured ? (
             <Notice>Add Supabase environment variables before using password recovery.</Notice>
           ) : null}
-          <form action={forgotPasswordAction} className="space-y-4">
-            <Input type="email" name="email" placeholder="Email address" />
-            <button type="submit" className={buttonVariants({ variant: "primary", className: "w-full" })}>
-              Send reset link
-            </button>
-          </form>
+          <ForgotPasswordForm />
           <Link href="/login" className="text-sm font-medium text-brand">
             Back to sign in
           </Link>

@@ -3,8 +3,8 @@ import { requireUser } from "@/services/auth.service";
 import { listRecentReviews } from "@/services/reviews.service";
 
 export default async function DashboardReviewsPage() {
-  await requireUser("/dashboard/reviews");
-  const reviews = await listRecentReviews();
+  const authContext = await requireUser("/dashboard/reviews");
+  const reviews = await listRecentReviews(authContext.user!.id);
 
   return (
     <div className="grid gap-4">

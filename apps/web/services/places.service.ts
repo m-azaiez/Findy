@@ -2,9 +2,37 @@ import { featuredPlaces } from "@/lib/constants/mock-data";
 import { hasSupabaseCredentials } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { mapPlaceCategories, mapPlaceRow } from "@/lib/mappers/database";
+import { type CreatePlaceInput } from "@/lib/validations/place";
 import { type SearchFiltersInput } from "@/lib/validations/search";
 import { type Database } from "@/types/database";
 import { type Place } from "@/types/domain";
+
+type PlacesClient = Awaited<ReturnType<typeof createServerSupabaseClient>>;
+type CategoryRow = Database["public"]["Tables"]["categories"]["Row"];
+type PlaceInsert = Database["public"]["Tables"]["places"]["Insert"];
+type PlaceRow = Database["public"]["Tables"]["places"]["Row"];
+type PlaceCategoryInsert = Database["public"]["Tables"]["place_categories"]["Insert"];
+
+export class PlaceConfigError extends Error {
+  constructor(message = "Place management is unavailable until Supabase is configured.") {
+    super(message);
+    this.name = "PlaceConfigError";
+  }
+}
+
+export class PlaceConflictError extends Error {
+  constructor(message = "A place with this slug already exists.") {
+    super(message);
+    this.name = "PlaceConflictError";
+  }
+}
+
+export class PlaceCategoryError extends Error {
+  constructor(message = "Select at least one existing category.") {
+    super(message);
+    this.name = "PlaceCategoryError";
+  }
+}
 
 export async function getFeaturedPlaces(): Promise<Place[]> {
   if (!hasSupabaseCredentials) {
@@ -148,9 +176,98 @@ export async function searchPlaces(filters: SearchFiltersInput): Promise<Place[]
   );
 }
 
+export async function createPlace(payload: CreatePlaceInput, createdBy?: string | null): Promise<Place> {
+  if (!hasSupabaseCredentials) {
+    throw new PlaceConfigError();
+  }
+
+  const client = await createServerSupabaseClient();
+  const normalizedSlug = payload.slug.trim().toLowerCase();
+  const normalizedCategoryIds = [...new Set(payload.categoryIds)];
+  const categoryRows = await fetchCategories(client, normalizedCategoryIds);
+
+  if (categoryRows.length !== normalizedCategoryIds.length) {
+    throw new PlaceCategoryError();
+  }
+
+  const { data: existingPlace, error: existingPlaceError } = await client
+    .from("places")
+    .select("id")
+    .eq("slug", normalizedSlug)
+    .maybeSingle();
+
+  if (existingPlaceError) {
+    throw existingPlaceError;
+  }
+
+  if (existingPlace) {
+    throw new PlaceConflictError();
+  }
+
+  const placeInsert: PlaceInsert = {
+    address: payload.address,
+    city: payload.city,
+    country: payload.country,
+    cover_image_url: payload.coverImageUrl || null,
+    created_by: createdBy ?? null,
+    description: payload.description,
+    gallery: [],
+    is_open_now: payload.isOpenNow,
+    name: payload.name,
+    opening_hours: {},
+    price_tier: payload.priceTier,
+    short_description: payload.shortDescription,
+    slug: normalizedSlug,
+    tags: payload.tags
+  };
+
+  const { data: rawCreatedPlace, error: createPlaceError } = await client
+    .from("places")
+    .insert(placeInsert as never)
+    .select("*")
+    .maybeSingle();
+  const createdPlace = rawCreatedPlace as PlaceRow | null;
+
+  if (createPlaceError) {
+    if (createPlaceError.code === "23505") {
+      throw new PlaceConflictError();
+    }
+
+    throw createPlaceError;
+  }
+
+  if (!createdPlace) {
+    throw new Error("The place was created, but it could not be loaded.");
+  }
+
+  try {
+    const placeCategoryInserts: PlaceCategoryInsert[] = normalizedCategoryIds.map((categoryId) => ({
+      category_id: categoryId,
+      place_id: createdPlace.id
+    }));
+
+    const { error: placeCategoryError } = await client.from("place_categories").insert(placeCategoryInserts as never);
+
+    if (placeCategoryError) {
+      throw placeCategoryError;
+    }
+  } catch (error) {
+    await client.from("places").delete().eq("id", createdPlace.id);
+    throw error;
+  }
+
+  const [place] = await hydratePlaceRows(client, [createdPlace]);
+
+  if (!place) {
+    throw new Error("The created place could not be hydrated.");
+  }
+
+  return place;
+}
+
 export async function hydratePlaceRows(
-  client: Awaited<ReturnType<typeof createServerSupabaseClient>>,
-  placeRows: Database["public"]["Tables"]["places"]["Row"][]
+  client: PlacesClient,
+  placeRows: PlaceRow[]
 ) {
   if (!placeRows.length) {
     return [];
@@ -183,7 +300,7 @@ function escapeSearchValue(value: string) {
 }
 
 async function fetchCategories(
-  client: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+  client: PlacesClient,
   categoryIds: string[]
 ) {
   const { data, error } = await client.from("categories").select("*").in("id", categoryIds);
@@ -192,5 +309,5 @@ async function fetchCategories(
     throw error;
   }
 
-  return data ?? [];
+  return (data ?? []) as CategoryRow[];
 }

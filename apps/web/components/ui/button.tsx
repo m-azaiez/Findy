@@ -13,8 +13,8 @@ type ButtonOptions = {
 };
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: "bg-brand text-brand-foreground hover:bg-brand/90",
-  secondary: "bg-accent text-accent-foreground hover:bg-accent/90",
+  primary: "bg-accent text-accent-foreground hover:bg-accent-secondary hover:text-accent-secondary-foreground",
+  secondary: "bg-brand text-brand-foreground hover:bg-accent-secondary hover:text-accent-secondary-foreground",
   ghost: "bg-transparent text-foreground/80 hover:bg-foreground/5"
 };
 

@@ -19,25 +19,108 @@ import {
   updatePassword
 } from "@/services/auth.service";
 
+type SignInFieldErrors = {
+  email?: string;
+  password?: string;
+};
+
+type SignUpFieldErrors = {
+  fullName?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+};
+
+type ForgotPasswordFieldErrors = {
+  email?: string;
+};
+
+type ResetPasswordFieldErrors = {
+  password?: string;
+  confirmPassword?: string;
+};
+
+export type SignInActionState = {
+  error?: string;
+  fieldErrors?: SignInFieldErrors;
+  status: "idle" | "error";
+};
+
+export type SignUpActionState = {
+  error?: string;
+  fieldErrors?: SignUpFieldErrors;
+  status: "idle" | "error";
+};
+
+export type ForgotPasswordActionState = {
+  error?: string;
+  fieldErrors?: ForgotPasswordFieldErrors;
+  status: "idle" | "error";
+};
+
+export type ResetPasswordActionState = {
+  error?: string;
+  fieldErrors?: ResetPasswordFieldErrors;
+  status: "idle" | "error";
+};
+
 function getFormValue(formData: FormData, key: string) {
   const value = formData.get(key);
   return typeof value === "string" ? value : "";
 }
 
-function ensureAuthConfigured(pathname: string) {
-  if (!hasSupabaseCredentials) {
-    redirect(
-      withQuery(pathname, {
-        error: "Add Supabase environment variables to enable authentication."
-      })
-    );
-  }
+function getFirstFieldErrors(fieldErrors: Record<string, string[] | undefined>) {
+  return Object.fromEntries(
+    Object.entries(fieldErrors)
+      .filter(([, value]) => Boolean(value?.[0]))
+      .map(([key, value]) => [key, value?.[0]])
+  ) as Record<string, string>;
 }
 
-export async function signInAction(formData: FormData) {
+function toSignInErrorState(error?: string, fieldErrors?: SignInFieldErrors): SignInActionState {
+  return {
+    error,
+    fieldErrors,
+    status: "error"
+  };
+}
+
+function toSignUpErrorState(error?: string, fieldErrors?: SignUpFieldErrors): SignUpActionState {
+  return {
+    error,
+    fieldErrors,
+    status: "error"
+  };
+}
+
+function toForgotPasswordErrorState(
+  error?: string,
+  fieldErrors?: ForgotPasswordFieldErrors
+): ForgotPasswordActionState {
+  return {
+    error,
+    fieldErrors,
+    status: "error"
+  };
+}
+
+function toResetPasswordErrorState(error?: string, fieldErrors?: ResetPasswordFieldErrors): ResetPasswordActionState {
+  return {
+    error,
+    fieldErrors,
+    status: "error"
+  };
+}
+
+export async function signInAction(
+  _previousState: SignInActionState,
+  formData: FormData
+): Promise<SignInActionState> {
   const next = sanitizeRedirectPath(getFormValue(formData, "next"), "/dashboard");
 
-  ensureAuthConfigured("/login");
+  if (!hasSupabaseCredentials) {
+    return toSignInErrorState("Add Supabase environment variables to enable authentication.");
+  }
 
   const parsed = signInSchema.safeParse({
     email: getFormValue(formData, "email"),
@@ -45,32 +128,30 @@ export async function signInAction(formData: FormData) {
   });
 
   if (!parsed.success) {
-    redirect(
-      withQuery("/login", {
-        error: parsed.error.issues[0]?.message ?? "Enter a valid email and password.",
-        next
-      })
+    return toSignInErrorState(
+      parsed.error.issues[0]?.message ?? "Enter a valid email and password.",
+      getFirstFieldErrors(parsed.error.flatten().fieldErrors) as SignInFieldErrors
     );
   }
 
   const { error } = await signInWithPassword(parsed.data);
 
   if (error) {
-    redirect(
-      withQuery("/login", {
-        error: error.message,
-        next
-      })
-    );
+    return toSignInErrorState(error.message);
   }
 
   redirect(next);
 }
 
-export async function signUpAction(formData: FormData) {
+export async function signUpAction(
+  _previousState: SignUpActionState,
+  formData: FormData
+): Promise<SignUpActionState> {
   const next = sanitizeRedirectPath(getFormValue(formData, "next"), "/dashboard");
 
-  ensureAuthConfigured("/register");
+  if (!hasSupabaseCredentials) {
+    return toSignUpErrorState("Add Supabase environment variables to enable authentication.");
+  }
 
   const parsed = signUpSchema.safeParse({
     fullName: getFormValue(formData, "fullName"),
@@ -80,11 +161,9 @@ export async function signUpAction(formData: FormData) {
   });
 
   if (!parsed.success) {
-    redirect(
-      withQuery("/register", {
-        error: parsed.error.issues[0]?.message ?? "Complete the form and try again.",
-        next
-      })
+    return toSignUpErrorState(
+      parsed.error.issues[0]?.message ?? "Complete the form and try again.",
+      getFirstFieldErrors(parsed.error.flatten().fieldErrors) as SignUpFieldErrors
     );
   }
 
@@ -95,12 +174,7 @@ export async function signUpAction(formData: FormData) {
   );
 
   if (error) {
-    redirect(
-      withQuery("/register", {
-        error: error.message,
-        next
-      })
-    );
+    return toSignUpErrorState(error.message);
   }
 
   if (data.session) {
@@ -115,18 +189,22 @@ export async function signUpAction(formData: FormData) {
   );
 }
 
-export async function forgotPasswordAction(formData: FormData) {
-  ensureAuthConfigured("/forgot-password");
+export async function forgotPasswordAction(
+  _previousState: ForgotPasswordActionState,
+  formData: FormData
+): Promise<ForgotPasswordActionState> {
+  if (!hasSupabaseCredentials) {
+    return toForgotPasswordErrorState("Add Supabase environment variables before using password recovery.");
+  }
 
   const parsed = forgotPasswordSchema.safeParse({
     email: getFormValue(formData, "email")
   });
 
   if (!parsed.success) {
-    redirect(
-      withQuery("/forgot-password", {
-        error: parsed.error.issues[0]?.message ?? "Enter a valid email address."
-      })
+    return toForgotPasswordErrorState(
+      parsed.error.issues[0]?.message ?? "Enter a valid email address.",
+      getFirstFieldErrors(parsed.error.flatten().fieldErrors) as ForgotPasswordFieldErrors
     );
   }
 
@@ -134,11 +212,7 @@ export async function forgotPasswordAction(formData: FormData) {
   const { error } = await sendPasswordResetEmail(parsed.data, `${baseUrl}/auth/callback?next=/reset-password`);
 
   if (error) {
-    redirect(
-      withQuery("/forgot-password", {
-        error: error.message
-      })
-    );
+    return toForgotPasswordErrorState(error.message);
   }
 
   redirect(
@@ -148,8 +222,13 @@ export async function forgotPasswordAction(formData: FormData) {
   );
 }
 
-export async function updatePasswordAction(formData: FormData) {
-  ensureAuthConfigured("/reset-password");
+export async function updatePasswordAction(
+  _previousState: ResetPasswordActionState,
+  formData: FormData
+): Promise<ResetPasswordActionState> {
+  if (!hasSupabaseCredentials) {
+    return toResetPasswordErrorState("Add Supabase environment variables before using password recovery.");
+  }
 
   const parsed = resetPasswordSchema.safeParse({
     password: getFormValue(formData, "password"),
@@ -157,21 +236,16 @@ export async function updatePasswordAction(formData: FormData) {
   });
 
   if (!parsed.success) {
-    redirect(
-      withQuery("/reset-password", {
-        error: parsed.error.issues[0]?.message ?? "Enter a valid password."
-      })
+    return toResetPasswordErrorState(
+      parsed.error.issues[0]?.message ?? "Enter a valid password.",
+      getFirstFieldErrors(parsed.error.flatten().fieldErrors) as ResetPasswordFieldErrors
     );
   }
 
   const { error } = await updatePassword(parsed.data);
 
   if (error) {
-    redirect(
-      withQuery("/reset-password", {
-        error: error.message
-      })
-    );
+    return toResetPasswordErrorState(error.message);
   }
 
   redirect(

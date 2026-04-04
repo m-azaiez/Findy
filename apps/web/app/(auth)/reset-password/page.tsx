@@ -1,9 +1,7 @@
 import Link from "next/link";
 
-import { updatePasswordAction } from "@/app/(auth)/actions";
-import { buttonVariants } from "@/components/ui/button";
+import { ResetPasswordForm } from "@/components/auth/auth-forms";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Notice } from "@/components/ui/notice";
 import { readFirstSearchParam, type SearchParamsRecord } from "@/lib/utils/url";
 import { getAuthContext } from "@/services/auth.service";
@@ -38,13 +36,7 @@ export default async function ResetPasswordPage({ searchParams }: ResetPasswordP
               Open the reset link from your email first. If the link expired, request a new one.
             </Notice>
           ) : (
-            <form action={updatePasswordAction} className="space-y-4">
-              <Input type="password" name="password" placeholder="New password" />
-              <Input type="password" name="confirmPassword" placeholder="Confirm new password" />
-              <button type="submit" className={buttonVariants({ variant: "primary", className: "w-full" })}>
-                Update password
-              </button>
-            </form>
+            <ResetPasswordForm />
           )}
           <Link href="/forgot-password" className="text-sm font-medium text-brand">
             Request another reset link

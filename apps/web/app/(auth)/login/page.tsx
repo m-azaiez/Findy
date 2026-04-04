@@ -1,10 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { signInAction } from "@/app/(auth)/actions";
-import { buttonVariants } from "@/components/ui/button";
+import { LoginForm } from "@/components/auth/auth-forms";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Notice } from "@/components/ui/notice";
 import {
   readFirstSearchParam,
@@ -43,14 +41,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           {!authContext.isConfigured ? (
             <Notice>Add Supabase environment variables to turn authentication on for this workspace.</Notice>
           ) : null}
-          <form action={signInAction} className="space-y-4">
-            <input type="hidden" name="next" value={next} />
-            <Input type="email" name="email" placeholder="Email address" />
-            <Input type="password" name="password" placeholder="Password" />
-            <button type="submit" className={buttonVariants({ variant: "primary", className: "w-full" })}>
-              Continue
-            </button>
-          </form>
+          <LoginForm next={next} />
           <div className="flex items-center justify-between text-sm text-foreground/60">
             <Link href="/forgot-password">Forgot password</Link>
             <Link href={`/register?next=${encodeURIComponent(next)}`}>Create account</Link>

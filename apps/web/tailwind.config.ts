@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "media",
   content: [
     "./app/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -23,7 +24,9 @@ const config: Config = {
         },
         accent: {
           DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))"
+          foreground: "hsl(var(--accent-foreground))",
+          secondary: "hsl(var(--accent-secondary))",
+          "secondary-foreground": "hsl(var(--accent-secondary-foreground))"
         }
       },
       borderRadius: {
@@ -31,11 +34,11 @@ const config: Config = {
         "2xl": "1.5rem"
       },
       boxShadow: {
-        halo: "0 25px 60px -30px rgba(6, 34, 28, 0.35)"
+        halo: "0 25px 60px -30px rgba(18, 41, 79, 0.28)"
       },
       backgroundImage: {
         "hero-grid":
-          "radial-gradient(circle at top left, rgba(245, 199, 120, 0.18), transparent 35%), radial-gradient(circle at bottom right, rgba(21, 105, 89, 0.16), transparent 30%)"
+          "radial-gradient(circle at top left, hsl(var(--accent-secondary) / 0.18), transparent 35%), radial-gradient(circle at bottom right, hsl(var(--accent) / 0.16), transparent 30%)"
       },
       keyframes: {
         drift: {

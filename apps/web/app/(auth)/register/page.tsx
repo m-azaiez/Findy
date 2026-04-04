@@ -1,10 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { signUpAction } from "@/app/(auth)/actions";
-import { buttonVariants } from "@/components/ui/button";
+import { RegisterForm } from "@/components/auth/auth-forms";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Notice } from "@/components/ui/notice";
 import {
   readFirstSearchParam,
@@ -43,19 +41,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
           {!authContext.isConfigured ? (
             <Notice>Add Supabase environment variables to turn registration on for this workspace.</Notice>
           ) : null}
-          <form action={signUpAction} className="grid gap-4 sm:grid-cols-2">
-            <input type="hidden" name="next" value={next} />
-            <Input name="fullName" placeholder="Full name" className="sm:col-span-2" />
-            <Input type="email" name="email" placeholder="Email address" className="sm:col-span-2" />
-            <Input type="password" name="password" placeholder="Password" />
-            <Input type="password" name="confirmPassword" placeholder="Confirm password" />
-            <button
-              type="submit"
-              className={buttonVariants({ variant: "primary", className: "sm:col-span-2" })}
-            >
-              Create account
-            </button>
-          </form>
+          <RegisterForm next={next} />
           <p className="text-sm text-foreground/60">
             Already have an account?{" "}
             <Link href={`/login?next=${encodeURIComponent(next)}`} className="font-medium text-brand">
