@@ -84,6 +84,9 @@ web-build
 
 # macOS / local editor noise
 .DS_Store
+.codex/
+.claude/
+Logo/
 
 # Nuxt.js build / generate output
 .nuxt
