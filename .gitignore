@@ -80,6 +80,7 @@ web_modules/
 out
 **/.expo/
 **/.expo-shared/
+**/.expo-export/
 web-build
 
 # macOS / local editor noise
