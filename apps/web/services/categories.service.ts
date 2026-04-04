@@ -1,8 +1,8 @@
-import { featuredCategories } from "@/lib/constants/mock-data";
-import { mapCategoryRow } from "@/lib/mappers/database";
 import { hasSupabaseCredentials } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { type Category } from "@/types/domain";
+import { featuredCategories } from "@findy/shared/constants/mock-data";
+import { mapCategoryRow } from "@findy/shared/mappers/database";
+import { type Category } from "@findy/shared/domain";
 
 export async function listCategories(): Promise<Category[]> {
   if (!hasSupabaseCredentials) {

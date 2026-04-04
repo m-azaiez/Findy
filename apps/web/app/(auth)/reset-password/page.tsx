@@ -3,8 +3,8 @@ import Link from "next/link";
 import { ResetPasswordForm } from "@/components/auth/auth-forms";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { Notice } from "@/components/ui/notice";
-import { readFirstSearchParam, type SearchParamsRecord } from "@/lib/utils/url";
 import { getAuthContext } from "@/services/auth.service";
+import { readFirstSearchParam, type SearchParamsRecord } from "@findy/shared/utils/url";
 
 type ResetPasswordPageProps = {
   searchParams?: Promise<SearchParamsRecord>;

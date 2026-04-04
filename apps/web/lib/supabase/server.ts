@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 import { supabaseAnonKey, supabaseUrl, hasSupabaseCredentials } from "@/lib/supabase/env";
-import { type Database } from "@/types/database";
+import { type Database } from "@findy/shared/database";
 
 export async function createServerSupabaseClient() {
   if (!hasSupabaseCredentials) {

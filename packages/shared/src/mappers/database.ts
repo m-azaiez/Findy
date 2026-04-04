@@ -1,5 +1,5 @@
-import { type Database, type Json } from "@/types/database";
-import { type Category, type Place, type Review } from "@/types/domain";
+import { type Database, type Json } from "../database";
+import { type Category, type Place, type Review } from "../domain";
 
 type CategoryRow = Database["public"]["Tables"]["categories"]["Row"];
 type PlaceRow = Database["public"]["Tables"]["places"]["Row"];

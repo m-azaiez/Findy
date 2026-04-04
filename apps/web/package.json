@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@findy/shared": "0.1.0",
     "@supabase/ssr": "^0.10.0",
     "@supabase/supabase-js": "^2.0.0",
     "@tanstack/react-query": "^5.0.0",

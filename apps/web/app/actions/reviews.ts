@@ -3,8 +3,6 @@
 import { revalidatePath } from "next/cache";
 
 import { hasSupabaseCredentials } from "@/lib/supabase/env";
-import { createReviewSchema, deleteReviewSchema, updateReviewSchema } from "@/lib/validations/review";
-import { sanitizeRedirectPath } from "@/lib/utils/url";
 import {
   ReviewAuthError,
   ReviewConfigError,
@@ -15,6 +13,8 @@ import {
   deleteReview,
   updateOwnReview
 } from "@/services/reviews.service";
+import { sanitizeRedirectPath } from "@findy/shared/utils/url";
+import { createReviewSchema, deleteReviewSchema, updateReviewSchema } from "@findy/shared/validations/review";
 
 export type ReviewActionState = {
   averageRating?: number;

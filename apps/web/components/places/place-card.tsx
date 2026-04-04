@@ -3,7 +3,7 @@ import Link from "next/link";
 import { FavoriteToggle } from "@/components/places/favorite-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
-import { type Place } from "@/types/domain";
+import { type Place } from "@findy/shared/domain";
 
 type PlaceCardFavoriteState = {
   isConfigured: boolean;

@@ -1,11 +1,11 @@
-import { featuredPlaces } from "@/lib/constants/mock-data";
 import { hasSupabaseCredentials } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { mapPlaceCategories, mapPlaceRow } from "@/lib/mappers/database";
-import { type CreatePlaceInput } from "@/lib/validations/place";
-import { type SearchFiltersInput } from "@/lib/validations/search";
-import { type Database } from "@/types/database";
-import { type Place } from "@/types/domain";
+import { featuredPlaces } from "@findy/shared/constants/mock-data";
+import { type Database } from "@findy/shared/database";
+import { mapPlaceCategories, mapPlaceRow } from "@findy/shared/mappers/database";
+import { type Place } from "@findy/shared/domain";
+import { type CreatePlaceInput } from "@findy/shared/validations/place";
+import { type SearchFiltersInput } from "@findy/shared/validations/search";
 
 type PlacesClient = Awaited<ReturnType<typeof createServerSupabaseClient>>;
 type CategoryRow = Database["public"]["Tables"]["categories"]["Row"];

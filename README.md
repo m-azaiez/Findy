@@ -2,7 +2,7 @@
 
 Findy is a mobile-first place discovery platform focused on search, favorites, reviews, and lightweight admin operations. It is inspired by standard discovery applications but scoped down strictly to core value and speed for its MVP.
 
-This repository contains the full Next.js application, database schemas, and documentation.
+This repository is organized as a small npm-workspaces monorepo with the admin web app, a new Expo mobile app, shared business logic packages, and Supabase assets in one place.
 
 ## 🚀 Features & Current Status
 
@@ -31,6 +31,21 @@ The development is guided by our Technical Specifications and MVP Roadmap. Here 
 - **Backend & Database**: Supabase (Auth, PostgreSQL DB, Edge Functions mapped via RPC)
 - **Deployment Strategy**: Vercel (Frontend) + Supabase Cloud (Backend)
 
+## 🧱 Monorepo Architecture
+
+```text
+apps/
+  web/       Existing Next.js admin/backoffice app
+  mobile/    New Expo user-facing mobile app
+packages/
+  shared/    Types, zod schemas, constants, helpers, DB mappers
+  config/    Shared TypeScript defaults
+supabase/
+  migrations/
+  seed/
+  seed.sql   Compatibility entrypoint for existing Supabase flows
+```
+
 ## 💻 Workspace Commands
 
 From the repository root, install dependencies:
@@ -39,10 +54,16 @@ From the repository root, install dependencies:
 npm install
 ```
 
-Launch the development server:
+Launch the admin web app:
 
 ```bash
-npm run dev
+npm run dev:web
+```
+
+Launch the mobile app:
+
+```bash
+npm run dev:mobile
 ```
 
 Additional verification commands available:
@@ -65,14 +86,15 @@ Required values for `apps/web/.env.local`:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `NEXT_PUBLIC_SITE_URL` (Used for auth redirects in local and deployed environments)
 
-*Note:* If Supabase credentials are not provided, the UI falls back to rendering local mock data, and auth-sensitive areas display configuration notices without breaking the application logic.
+*Note:* If Supabase credentials are not provided, the web app falls back to rendering local mock data, and auth-sensitive areas display configuration notices without breaking the application logic.
 
 ## 🗄 Database Setup
 
 The database schema and policies are maintained through Supabase migrations. You can push the initial definitions to your active Supabase environment using the CLI or by running SQL directly from the project tracking.
 
 - **Initial schema location**: `supabase/migrations/20260401133000_initial_schema.sql`
-- **Initial sample data**: `supabase/seed.sql` 
+- **Seed compatibility entrypoint**: `supabase/seed.sql`
+- **Seed folder mirror**: `supabase/seed/001_initial_seed.sql`
 
 ## 🗺 Documentation
 

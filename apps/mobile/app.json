@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "Findy Mobile",
+    "slug": "findy-project",
+    "scheme": "findy",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "extra": {
+      "eas": {
+        "projectId": "363474a8-13ce-408f-bea4-8af75459bb2d"
+      }
+    },
+    "owner": "findy-project"
+  }
+}

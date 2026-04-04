@@ -1,7 +1,7 @@
 import { Notice } from "@/components/ui/notice";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
-import { readFirstSearchParam, type SearchParamsRecord } from "@/lib/utils/url";
 import { requireUser } from "@/services/auth.service";
+import { readFirstSearchParam, type SearchParamsRecord } from "@findy/shared/utils/url";
 
 const dashboardStats = [
   { label: "Saved places", value: "12" },

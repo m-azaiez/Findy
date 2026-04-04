@@ -1,9 +1,9 @@
-import { featuredPlaces } from "@/lib/constants/mock-data";
 import { hasSupabaseCredentials } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { hydratePlaceRows } from "@/services/places.service";
-import { type Database } from "@/types/database";
-import { type Place } from "@/types/domain";
+import { featuredPlaces } from "@findy/shared/constants/mock-data";
+import { type Database } from "@findy/shared/database";
+import { type Place } from "@findy/shared/domain";
 
 type FavoritesClient = Awaited<ReturnType<typeof createServerSupabaseClient>>;
 type FavoriteRow = Database["public"]["Tables"]["favorites"]["Row"];

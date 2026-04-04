@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { type SearchFiltersState } from "@/types/domain";
+import { type SearchFiltersState } from "@findy/shared/domain";
 
 export function useSearchFilters(initialFilters: SearchFiltersState) {
   const [filters, setFilters] = useState<SearchFiltersState>(initialFilters);

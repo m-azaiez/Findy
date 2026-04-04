@@ -11,7 +11,7 @@ import { getAuthContext } from "@/services/auth.service";
 import { attachFavoriteState } from "@/services/favorites.service";
 import { getViewerReviewForPlace, listReviewsForPlace } from "@/services/reviews.service";
 import { getPlaceBySlug } from "@/services/places.service";
-import { type Place, type Review } from "@/types/domain";
+import { type Place, type Review } from "@findy/shared/domain";
 
 type PlaceDetailPageProps = {
   params: Promise<{

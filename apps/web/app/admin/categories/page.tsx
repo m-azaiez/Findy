@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
-import { featuredCategories } from "@/lib/constants/mock-data";
+import { featuredCategories } from "@findy/shared/constants/mock-data";
 
 export default function AdminCategoriesPage() {
   return (

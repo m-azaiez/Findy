@@ -8,6 +8,12 @@
     ],
     "baseUrl": ".",
     "paths": {
+      "@findy/shared": [
+        "../../packages/shared/src/index.ts"
+      ],
+      "@findy/shared/*": [
+        "../../packages/shared/src/*"
+      ],
       "@/*": [
         "./*"
       ]
